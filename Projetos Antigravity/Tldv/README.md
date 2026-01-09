@@ -272,6 +272,127 @@ lsof -ti:3000 | xargs kill -9
 - Certifique-se de segurar o card por pelo menos 250ms
 - Teste em um dispositivo real ou emulador mobile
 
+## 🚀 Deploy em Produção
+
+### Deploy no Vercel (Frontend)
+
+#### 1. Prepare o Projeto
+
+Certifique-se de que os arquivos `vercel.json` e `.vercelignore` estão presentes na raiz do projeto (já incluídos).
+
+#### 2. Configure Variáveis de Ambiente
+
+No dashboard do Vercel, adicione as seguintes variáveis:
+
+```
+GEMINI_API_KEY=sua_chave_gemini
+NEXT_PUBLIC_API_URL=https://seu-backend-url.com
+```
+
+#### 3. Configure o Build
+
+No dashboard do Vercel:
+- **Framework Preset:** Next.js
+- **Root Directory:** `./` (raiz do projeto)
+- **Build Command:** `npm run build`
+- **Output Directory:** `.next`
+- **Install Command:** `npm install`
+
+#### 4. Deploy
+
+```bash
+# Instale o Vercel CLI
+npm i -g vercel
+
+# Faça login
+vercel login
+
+# Deploy
+vercel --prod
+```
+
+#### 5. Fixing 404 Errors
+
+Se você ver um erro 404 após o deploy:
+
+1. **Verifique o Root Directory** no Vercel Dashboard
+   - Deve estar em `./` (não em `src/` ou outro diretório)
+
+2. **Force Redeploy**
+   ```bash
+   vercel --prod --force
+   ```
+
+3. **Verifique as Environment Variables**
+   - Certifique-se de que todas as variáveis estão configuradas
+   - Redeploy após adicionar variáveis
+
+4. **Check Build Logs**
+   - Acesse o Vercel Dashboard > Deployments
+   - Clique no deploy com problema
+   - Verifique os logs de build para erros
+
+### Deploy do Backend (Railway/Render)
+
+#### Opção A: Railway
+
+```bash
+# Instale o Railway CLI
+npm i -g @railway/cli
+
+# Login
+railway login
+
+# Inicie um novo projeto
+cd backend
+railway init
+
+# Adicione PostgreSQL
+railway add postgresql
+
+# Adicione Redis
+railway add redis
+
+# Configure variáveis
+railway variables set JWT_SECRET=seu_secret_aqui
+railway variables set GEMINI_API_KEY=sua_chave_aqui
+
+# Deploy
+railway up
+```
+
+#### Opção B: Render
+
+1. Crie um novo Web Service no [Render](https://render.com)
+2. Conecte seu repositório GitHub
+3. Configure:
+   - **Root Directory:** `backend`
+   - **Build Command:** `npm install && npx prisma generate && npm run build`
+   - **Start Command:** `npm run start:prod`
+4. Adicione PostgreSQL e Redis como serviços
+5. Configure as variáveis de ambiente
+
+### Fluxo Completo de Deploy
+
+```bash
+# 1. Commit e push das configurações
+git add vercel.json .vercelignore
+git commit -m "chore: Add Vercel deployment configuration"
+git push origin main
+
+# 2. Deploy do Backend primeiro (Railway/Render)
+# Obtenha a URL do backend deployado
+
+# 3. Configure a URL no Vercel
+# Adicione NEXT_PUBLIC_API_URL com a URL do backend
+
+# 4. Deploy do Frontend
+vercel --prod
+
+# 5. Teste o deploy
+# Acesse sua URL do Vercel e teste todas as funcionalidades
+```
+
 ## 📝 Roadmap
 
 - [ ] Integração real com Gemini AI para transcrição
