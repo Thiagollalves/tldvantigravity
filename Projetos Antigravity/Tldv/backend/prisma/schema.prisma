@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum MeetingStatus {
+  RECEIVED
+  AUDIO_EXTRACTING
+  AUDIO_EXTRACTED
+  TRANSCRIBING
+  TRANSCRIBED
+  SUMMARIZING
+  SUMMARIZED
+  EXTRACTING_TASKS
+  EXTRACTING_DECISIONS
+  READY
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  teams     TeamMember[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  members   TeamMember[]
+  meetings  Meeting[]
+  auditLogs AuditLog[]
+  retentionDays Int @default(90)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id     String @id @default(cuid())
+  role   Role   @default(MEMBER)
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([teamId, userId])
+}
+
+model Meeting {
+  id        String        @id @default(cuid())
+  title     String
+  status    MeetingStatus @default(RECEIVED)
+  language  String        @default("pt-BR")
+  template  String        @default("general")
+  
+  startedAt DateTime?
+  endedAt   DateTime?
+  
+  team      Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+  
+  mediaAssets MediaAsset[]
+  transcript  Transcript?
+  summaries   SummaryVersion[]
+  tasks       Task[]
+  decisions   Decision[]
+  
+  consentRecordedAt DateTime?
+  consentTextVersion String?
+
+  failureReason String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teamId])
+}
+
+model MediaAsset {
+  id          String   @id @default(cuid())
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId   String
+  storageKey  String   @unique
+  mime        String
+  durationMs  Int?
+  sizeBytes   BigInt
+  createdAt   DateTime @default(now())
+}
+
+model Transcript {
+  id          String   @id @default(cuid())
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId   String   @unique
+  fullText    String   @db.Text
+  segments    Json     // [{start_ms, end_ms, speaker, text}]
+  language    String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SummaryVersion {
+  id          String   @id @default(cuid())
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId   String
+  version     Int
+  template    String
+  model       String
+  summaryJson Json     // The structured JSON from LLM
+  
+  createdAt   DateTime @default(now())
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId   String
+  text        String   @db.Text
+  owner       String?
+  dueDate     DateTime?
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Decision {
+  id          String   @id @default(cuid())
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  meetingId   String
+  text        String   @db.Text
+  owner       String?
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId      String
+  userId      String?
+  action      String
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
+model Integration {
+  id          String   @id @default(cuid())
+  teamId      String
+  provider    String   // 'NOTION', 'SLACK'
+  config      Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([teamId, provider])
+}
