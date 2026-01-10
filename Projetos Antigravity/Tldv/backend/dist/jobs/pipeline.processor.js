@@ -50,7 +50,8 @@ let PipelineProcessor = class PipelineProcessor extends bullmq_1.WorkerHost {
                 where: { id: meetingId },
                 data: {
                     status: client_1.MeetingStatus.FAILED,
-                    failureReason: error.message || 'Internal error',
+                    failureReason: (error instanceof Error ? error.message : 'Unknown error') ||
+                        'Internal error',
                 },
             });
             throw error;

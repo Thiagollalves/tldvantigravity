@@ -5,10 +5,6 @@ import { StorageService } from '../common/storage.service';
 import { AIService } from '../ai/ai.service';
 import { MeetingStatus, Prisma } from '@prisma/client';
 import { AnalysisResult, PipelineJobData } from '../common/types';
-import * as ffmpeg from 'fluent-ffmpeg';
-import * as fs from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
 
 @Processor('meeting-pipeline')
 export class PipelineProcessor extends WorkerHost {
@@ -33,14 +29,16 @@ export class PipelineProcessor extends WorkerHost {
         case 'SUMMARIZE':
           return await this.handleSummarization(job);
         default:
-          throw new Error(`Unknown step: ${step}`);
+          throw new Error(`Unknown step: ${step as any}`);
       }
     } catch (error: any) {
       await this.prisma.meeting.update({
         where: { id: meetingId },
         data: {
           status: MeetingStatus.FAILED,
-          failureReason: (error.message as string) || 'Internal error',
+          failureReason:
+            (error instanceof Error ? error.message : 'Unknown error') ||
+            'Internal error',
         },
       });
       throw error;
