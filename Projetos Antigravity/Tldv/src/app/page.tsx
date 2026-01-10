@@ -9,11 +9,9 @@ import {
   CheckCircle2,
   AlertCircle,
   MoreVertical,
-  Play,
-  ArrowRight
+  Play
 } from "lucide-react"
 import { formatDate, formatDuration } from "@/lib/utils"
-import Link from "next/link"
 
 const stats = [
   { label: "Total de Reuniões", value: "24", icon: Video, color: "text-blue-500" },
@@ -53,10 +51,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const savedName = localStorage.getItem("userName")
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (savedName) setUserName(savedName)
   }, [])
 
-  function cn(...inputs: any[]) {
+  function cn(...inputs: (string | undefined | boolean)[]) {
     return inputs.filter(Boolean).join(" ")
   }
 

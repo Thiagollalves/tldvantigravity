@@ -35,7 +35,9 @@ export function Sidebar({ onItemClick }: { onItemClick?: () => void }) {
 
     useEffect(() => {
         // Enforce CSR-only role detection
-        setUserRole(localStorage.getItem("userRole") || "USER")
+        const storedRole = localStorage.getItem("userRole")
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (storedRole) setUserRole(storedRole)
     }, [])
 
     const handleLogout = () => {

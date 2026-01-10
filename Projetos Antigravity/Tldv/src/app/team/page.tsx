@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Users, UserPlus, Shield, Mail, MoreHorizontal } from "lucide-react";
+import { UserPlus, Shield, Mail, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const teamMembers = [

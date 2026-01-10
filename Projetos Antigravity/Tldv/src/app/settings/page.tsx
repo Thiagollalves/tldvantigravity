@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Users, Shield, Zap, Bell, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function SettingsPage() {
@@ -62,7 +61,7 @@ export default function SettingsPage() {
                                 <CardTitle className="gradient-text">Membros da Equipe</CardTitle>
                                 <CardDescription>Pessoas que têm acesso a este workspace.</CardDescription>
                             </div>
-                            <Button size="sm" className="gap-2"><Users className="h-4 w-4" /> Convidar</Button>
+                            <Button size="sm" className="gap-2">Convidar</Button>
                         </CardHeader>
                         <CardContent>
                             <div className="divide-y divide-white/5">

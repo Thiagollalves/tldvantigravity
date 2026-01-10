@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         // Create tasks from analysis
         if (analysis.tasks && analysis.tasks.length > 0) {
             await prisma.task.createMany({
-                data: analysis.tasks.map((t: any) => ({
+                data: analysis.tasks.map((t: Record<string, unknown>) => ({
                     description: t.description,
                     assignee: t.assignee,
                     meetingId

@@ -12,7 +12,7 @@ export async function GET() {
             }
         })
         return NextResponse.json(meetings)
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Failed to fetch meetings" }, { status: 500 })
     }
 }

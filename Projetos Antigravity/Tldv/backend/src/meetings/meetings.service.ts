@@ -66,7 +66,7 @@ export class MeetingsService {
     return { status: 'PROCESSING_STARTED' };
   }
 
-  async findAll(teamId: string, _filters: Record<string, string>) {
+  async findAll(teamId: string) {
     return this.prisma.meeting.findMany({
       where: { teamId },
       orderBy: { createdAt: 'desc' },

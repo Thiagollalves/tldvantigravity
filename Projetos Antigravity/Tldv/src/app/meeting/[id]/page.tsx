@@ -3,7 +3,6 @@
 import { useState } from "react"
 import {
     Play,
-    Pause,
     SkipBack,
     SkipForward,
     Download,
@@ -26,7 +25,7 @@ const mockTranscript = [
     { time: 25, speaker: "Bruno", text: "Eu estou trabalhando no layout da página de reunião, falta apenas o chat." },
 ]
 
-export default function MeetingDetailsPage({ params }: { params: { id: string } }) {
+export default function MeetingDetailsPage() {
     const [currentTime, setCurrentTime] = useState(0)
     const [activeTab, setActiveTab] = useState<"summary" | "tasks" | "decisions" | "chat">("summary")
 

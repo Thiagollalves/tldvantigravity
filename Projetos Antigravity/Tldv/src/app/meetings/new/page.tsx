@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Mic, Loader2, CheckCircle2, FileVideo } from "lucide-react";
+import { Upload, Mic, Loader2, FileVideo } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import apiClient from "@/lib/api-client";
 import { useRouter } from "next/navigation";
@@ -51,7 +51,7 @@ export default function NewMeetingPage() {
             };
 
             xhr.send(file);
-        } catch (err) {
+        } catch {
             setIsUploading(false);
         }
     };

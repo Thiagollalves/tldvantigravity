@@ -5,10 +5,9 @@ import apiClient from "@/lib/api-client";
 import { Meeting } from "@/types";
 import { useState } from "react";
 import { Search, Filter, Calendar, Clock, Video, List, Grid } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatDate, formatDuration } from "@/lib/utils";
+import { formatDate, formatDuration, cn } from "@/lib/utils";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 

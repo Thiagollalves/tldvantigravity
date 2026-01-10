@@ -44,12 +44,39 @@ export const MeetingSchema = z.object({
     videoUrl: z.string().optional(),
     duration: z.number().optional(),
     createdAt: z.string(),
+    transcript: z.object({
+        segments: z.array(TranscriptSegmentSchema)
+    }).optional(),
+    summaries: z.array(z.object({
+        summaryJson: SummarySchema
+    })).optional(),
+    tasks: z.array(z.object({
+        text: z.string(),
+        owner: z.string().optional(),
+        dueDate: z.string().optional()
+    })).optional(),
 });
 
 export type Meeting = z.infer<typeof MeetingSchema>;
 export type TranscriptSegment = z.infer<typeof TranscriptSegmentSchema>;
 export type Summary = z.infer<typeof SummarySchema>;
 export type Participant = z.infer<typeof ParticipantSchema>;
+
+export interface Decision {
+    text: string;
+    owner?: string | null;
+}
+
+export interface Risk {
+    text: string;
+    severity: "low" | "medium" | "high";
+}
+
+export interface Task {
+    text: string;
+    owner?: string;
+    dueDate?: string;
+}
 
 export interface ChatResponse {
     answer: string;

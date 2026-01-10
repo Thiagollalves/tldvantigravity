@@ -66,7 +66,7 @@ export default function SearchPage() {
                                         <div className="flex items-center gap-2 text-[10px] text-primary font-black uppercase tracking-widest mb-1">
                                             <span className="h-1 w-1 rounded-full bg-primary" /> Transcrição
                                         </div>
-                                        <h3 className="text-base md:text-lg font-bold truncate">"sobre a integração com o **Google Calendar**..."</h3>
+                                        <h3 className="text-base md:text-lg font-bold truncate">&quot;sobre a integração com o **Google Calendar**...&quot;</h3>
                                         <p className="text-xs md:text-sm text-muted-foreground truncate">Encontrado em: **Mensal de Produto**</p>
                                     </div>
                                     <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1 shrink-0" />

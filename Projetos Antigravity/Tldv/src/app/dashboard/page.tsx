@@ -5,12 +5,12 @@ import apiClient from "@/lib/api-client";
 import { Meeting } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Video, Clock, CheckCircle2, Play, PlusCircle, Search } from "lucide-react";
-import { formatDate, formatDuration } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
-    const { data: meetings, isLoading, isError } = useQuery<Meeting[]>({
+    const { data: meetings, isLoading } = useQuery<Meeting[]>({
         queryKey: ["meetings", "recent"],
         queryFn: async () => {
             const { data } = await apiClient.get("/meetings");

@@ -17,7 +17,7 @@ export class PipelineProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<PipelineJobData, any, string>): Promise<any> {
+  async process(job: Job<PipelineJobData>): Promise<void> {
     const { meetingId, step } = job.data;
 
     try {
@@ -29,16 +29,15 @@ export class PipelineProcessor extends WorkerHost {
         case 'SUMMARIZE':
           return await this.handleSummarization(job);
         default:
-          throw new Error(`Unknown step: ${step as any}`);
+          throw new Error(`Unknown step: ${step as string}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       await this.prisma.meeting.update({
         where: { id: meetingId },
         data: {
           status: MeetingStatus.FAILED,
-          failureReason:
-            (error instanceof Error ? error.message : 'Unknown error') ||
-            'Internal error',
+          failureReason: errorMessage,
         },
       });
       throw error;

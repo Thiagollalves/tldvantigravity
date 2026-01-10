@@ -1,27 +1,25 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import apiClient from "@/lib/api-client";
-import { Meeting, TranscriptSegment, Summary } from "@/types";
-import { useState, useRef, useEffect } from "react";
+import { Meeting, TranscriptSegment } from "@/types";
+import { useState, useRef } from "react";
 import {
-    Play, Pause, SkipBack, SkipForward, FileText,
+    Play, Pause, FileText,
     ClipboardList, Target, MessageSquare, Send,
-    Share2, Download, MoreVertical, Trash2
+    Share2, Trash2, Video, Loader2, AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import ReactMarkdown from "react-markdown";
 
 export default function MeetingDetailsPage() {
     const { id } = useParams();
     const [currentTime, setCurrentTime] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
-    const queryClient = useQueryClient();
 
     const { data: meeting, isLoading } = useQuery<Meeting>({
         queryKey: ["meetings", id],
@@ -87,7 +85,7 @@ export default function MeetingDetailsPage() {
                         ) : (
                             <div className="text-muted-foreground flex flex-col items-center">
                                 <Video className="h-12 w-12 opacity-20 mb-2" />
-                                <span className="text-xs uppercase tracking-widest font-black">Vídeo indisponível</span>
+                                <span className="text-xs uppercase tracking-widest font-black">V&iacute;deo indispon&iacute;vel</span>
                             </div>
                         )}
 
@@ -114,7 +112,7 @@ export default function MeetingDetailsPage() {
                     {/* Transcript Scroll Area */}
                     <div className="flex-1 overflow-y-auto p-8 space-y-6">
                         <h2 className="text-lg font-bold sticky top-0 bg-background/50 backdrop-blur pb-4">Transcrição</h2>
-                        {meeting.transcript?.segments?.map((seg: any, i: number) => (
+                        {meeting.transcript?.segments?.map((seg: TranscriptSegment, i: number) => (
                             <div
                                 key={i}
                                 className={cn(
@@ -178,7 +176,7 @@ export default function MeetingDetailsPage() {
                                                         <Target className="h-3 w-3" /> Decisões
                                                     </h4>
                                                     <ul className="space-y-2">
-                                                        {meeting.summaries[0].summaryJson.decisions.map((d: any, i: number) => (
+                                                        {meeting.summaries[0].summaryJson.decisions.map((d: { text: string; owner?: string | null }, i: number) => (
                                                             <li key={i} className="text-[11px] leading-tight text-green-200/70 border-l border-green-500/30 pl-2">
                                                                 {d.text}
                                                             </li>
@@ -192,7 +190,7 @@ export default function MeetingDetailsPage() {
                                                         <AlertCircle className="h-3 w-3" /> Riscos
                                                     </h4>
                                                     <ul className="space-y-2">
-                                                        {meeting.summaries[0].summaryJson.risks.map((r: any, i: number) => (
+                                                        {meeting.summaries[0].summaryJson.risks.map((r: { text: string; severity: string }, i: number) => (
                                                             <li key={i} className="text-[11px] leading-tight text-amber-200/70 border-l border-amber-500/30 pl-2">
                                                                 {r.text}
                                                             </li>
@@ -229,7 +227,7 @@ export default function MeetingDetailsPage() {
                                     {messages.length === 0 && (
                                         <div className="text-center p-8 opacity-30 mt-12">
                                             <MessageSquare className="h-10 w-10 mx-auto mb-4" />
-                                            <p className="text-sm">Faça perguntas sobre esta reunião.<br />Ex: "O que ficou decidido sobre o prazo?"</p>
+                                            <p className="text-sm">Faça perguntas sobre esta reunião.<br />Ex: &quot;O que ficou decidido sobre o prazo?&quot;</p>
                                         </div>
                                     )}
                                     {messages.map((m, i) => (
@@ -272,20 +270,13 @@ function formatTime(seconds: number) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const config: any = {
+    const statusMap: Record<string, string> = {
         READY: "bg-green-500 text-white",
         FAILED: "bg-red-500 text-white",
         RECEIVED: "bg-blue-500 text-white",
-    }[status] || "bg-amber-500 text-white animate-pulse";
+    };
+    const config = statusMap[status] || "bg-amber-500 text-white animate-pulse";
     return <span className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded shadow-lg shadow-white/5", config)}>{status}</span>;
-}
-
-function Loader2({ className }: { className?: string }) {
-    return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>;
-}
-
-function AlertCircle({ className }: { className?: string }) {
-    return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>;
 }
 
 function formatDate(date: string | Date) {
